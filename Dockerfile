@@ -1,29 +1,37 @@
-FROM 416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-base-build:1.0.3
+FROM amazonlinux:2
 
 ARG ANT_VERSION
 ARG DEPENDENCY_CHECK_VERSION
 ARG IVY_VERSION
-ARG ORACLE_JDK_VERSION
 ARG SONAR_SCANNER_VERSION
 
-RUN dnf upgrade -y && \
-    dnf install -y \
+ENV TZ="Europe/London"
+
+RUN yum upgrade -y && \
+    yum install -y \
     findutils \
-    java-21-amazon-corretto-headless && \
-    dnf clean all
+    git \
+    make \
+    java-1.8.0-openjdk \
+    java-1.8.0-openjdk-devel \
+    java-1.8.0-openjdk-headless \
+    java-17-amazon-corretto-headless \
+    tar \
+    unzip \
+    zip && \
+    yum clean all
 
 COPY resources/ /resources/
 
 RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
     unzip /resources/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip -d /usr/share/ && \
     unzip /resources/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip -d /usr/share && \
-    mv /resources/ivy-${IVY_VERSION}.jar /usr/share/apache-ant-${ANT_VERSION}/lib/ && \
-    rpm -ivh /resources/jdk-${ORACLE_JDK_VERSION}-linux-x64.rpm
+    mv /resources/ivy-${IVY_VERSION}.jar /usr/share/apache-ant-${ANT_VERSION}/lib/
 
 RUN rm -rf /resources/
 
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+ENV JAVA_17_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
 ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
-ENV JAVA_HOME=/usr/java/default
-ENV JAVA_21_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
 
-RUN update-alternatives --remove java /usr/lib/jvm/java-21-amazon-corretto.x86_64/bin/java
+RUN update-alternatives --remove java "${JAVA_17_HOME}/bin/java"
