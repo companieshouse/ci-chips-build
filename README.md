@@ -1,3 +1,3 @@
 # ci-chips-build
 
-Builds a Docker image used for building Chips
+Builds an Amazon Linux 2 Docker image used to build the Chips project on Concourse.
