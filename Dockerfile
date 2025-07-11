@@ -1,4 +1,4 @@
-FROM amazonlinux:2
+FROM 416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-base-build:1.0.3
 
 ARG ANT_VERSION
 ARG DEPENDENCY_CHECK_VERSION
@@ -8,16 +8,14 @@ ARG SONAR_SCANNER_VERSION
 
 ENV TZ="Europe/London"
 
-RUN yum upgrade -y && \
-    yum install -y \
+RUN dnf upgrade -y && \
+    dnf install -y \
     findutils \
-    git \
-    make \
     java-17-amazon-corretto-headless \
-    tar \
-    unzip \
-    zip && \
-    yum clean all
+    nodejs20 && \
+    dnf clean all && \
+    ln -s /usr/bin/node-20 /usr/bin/node && \
+    ln -s /usr/bin/npm-20 /usr/bin/npm
 
 COPY resources/ /resources/
 
