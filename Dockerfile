@@ -10,7 +10,6 @@ ENV TZ="Europe/London"
 RUN dnf upgrade -y && \
     dnf install -y \
     findutils \
-    java-17-amazon-corretto-headless \
     java-21-amazon-corretto-devel-21.0.13* \
     nodejs20 && \
     dnf clean all
@@ -27,8 +26,7 @@ RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
 
 RUN rm -rf /resources/
 
-ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
-ENV JAVA_17_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
+ENV JAVA_HOME=/usr/java/default
 ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
 
 RUN update-alternatives --remove java "${JAVA_17_HOME}/bin/java"
