@@ -15,7 +15,7 @@ RUN dnf upgrade -y && \
     dnf clean all
 
 # Workaround pending release of amazonlinux:2023.12.20261117 to dockerhub
-RUN dnf update -y java-21-amazon-corretto-devel java-17-amazon-corretto-headless --releasever 2023.12.20261117
+RUN dnf update -y java-21-amazon-corretto-devel --releasever 2023.12.20261117
 
 COPY resources/ /resources/
 
@@ -26,7 +26,7 @@ RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
 
 RUN rm -rf /resources/
 
-ENV JAVA_HOME=/usr/java/default
+ENV JAVA_21_HOME=/usr/java/default
 ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
 
-RUN update-alternatives --remove java "${JAVA_17_HOME}/bin/java"
+RUN update-alternatives --remove java "${JAVA_21_HOME}/bin/java"
