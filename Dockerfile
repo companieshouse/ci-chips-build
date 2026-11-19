@@ -26,7 +26,6 @@ RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
 
 RUN rm -rf /resources/
 
-ENV JAVA_21_HOME=/usr/java/default
+RUN mkdir -p /usr/java && ln -s /usr/lib/jvm/java-21-amazon-corretto.x86_64 /usr/java/defaultdiffer
+ENV JAVA_HOME=/usr/java/default
 ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
-
-RUN update-alternatives --remove java "${JAVA_21_HOME}/bin/java"
