@@ -14,9 +14,6 @@ RUN dnf upgrade -y && \
     nodejs20 && \
     dnf clean all
 
-# Workaround pending release of amazonlinux:2023.12.20261117 to dockerhub
-RUN dnf update -y java-21-amazon-corretto-devel --releasever 2023.12.20261117
-
 COPY resources/ /resources/
 
 RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
