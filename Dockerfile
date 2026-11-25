@@ -3,7 +3,6 @@ FROM 416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-base-build:latest
 ARG ANT_VERSION
 ARG DEPENDENCY_CHECK_VERSION
 ARG IVY_VERSION
-ARG ORACLE_JDK_VERSION
 ARG SONAR_SCANNER_VERSION
 
 ENV TZ="Europe/London"
@@ -11,24 +10,23 @@ ENV TZ="Europe/London"
 RUN dnf upgrade -y && \
     dnf install -y \
     findutils \
-    java-17-amazon-corretto-headless \
+    java-21-amazon-corretto-devel-21.0.13* \
     nodejs20 && \
-    dnf clean all && \
-    ln -s /usr/bin/node-20 /usr/bin/node && \
-    ln -s /usr/bin/npm-20 /usr/bin/npm
+    dnf clean all
+
+ # Workaround pending release of amazonlinux:2023.12.20261117 to dockerhub
+RUN dnf update -y java-21-amazon-corretto-devel --releasever 2023.12.20261117
 
 COPY resources/ /resources/
 
 RUN unzip /resources/apache-ant-${ANT_VERSION}-bin.zip -d /usr/share/ && \
     unzip /resources/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-x64.zip -d /usr/share/ && \
     unzip /resources/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip -d /usr/share && \
-    mv /resources/ivy-${IVY_VERSION}.jar /usr/share/apache-ant-${ANT_VERSION}/lib/ && \
-    rpm -ivh /resources/jdk-${ORACLE_JDK_VERSION}-linux-x64.rpm
+    mv /resources/ivy-${IVY_VERSION}.jar /usr/share/apache-ant-${ANT_VERSION}/lib/
 
 RUN rm -rf /resources/
 
-ENV JAVA_HOME=/usr/java/default
-ENV JAVA_17_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
-ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
 
-RUN update-alternatives --remove java "${JAVA_17_HOME}/bin/java"
+RUN mkdir -p /usr/java && ln -s /usr/lib/jvm/java-21-amazon-corretto.x86_64 /usr/java/default
+ENV JAVA_HOME=/usr/java/default
+ENV PATH="$PATH:/usr/share/apache-ant-${ANT_VERSION}/bin:/usr/share/sonar-scanner-${SONAR_SCANNER_VERSION}-linux-x64/bin:/usr/share/dependency-check/bin"
